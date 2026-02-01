@@ -8,16 +8,18 @@ Quine（以哲学家 Willard Van Orman Quine 命名）是一个**不接受任何
 
 这个项目深入探索了 Quine 的各种实现方式、变体形式以及相关的计算理论。
 
+**🎯 本项目以 Python 3 为主，同时提供 Python 2 兼容版本。**
+
 ## 🚀 快速开始
 
-### 验证一个 Quine
+### 验证一个 Quine (Python 3)
 
 ```bash
-# 使用 Python 2 兼容版本
-python classic/quine_py2.py | diff - classic/quine_py2.py
+# 标准 Python 3 Quine
+python3 classic/quine.py | diff - classic/quine.py
 
-# 极简版本 (31 字节)
-python classic/quine_simple_py2.py | diff - classic/quine_simple_py2.py
+# 极简版本
+python3 classic/quine_short.py | diff - classic/quine_short.py
 
 # 如果没有任何输出，说明是完美的 Quine！
 ```
@@ -25,7 +27,15 @@ python classic/quine_simple_py2.py | diff - classic/quine_simple_py2.py
 ### 运行演示
 
 ```bash
-python demo_py2.py
+python3 demo.py
+```
+
+### Python 2 版本
+
+如需 Python 2 兼容版本：
+
+```bash
+python python2/quine_py2.py | diff - python2/quine_py2.py
 ```
 
 ## 📁 项目结构
@@ -39,35 +49,52 @@ Quine/
 ├── FAQ.md                       # 常见问题
 ├── PROJECT_SUMMARY.md           # 项目摘要
 ├── FIXES_REPORT.md              # 修复报告
+├── demo.py                      # Python 3 演示脚本
 │
-├── classic/                     # 经典 Quine 实现
-│   ├── quine_py2.py            # Python 2 版本 [✓ 验证通过]
-│   ├── quine_simple_py2.py     # 极简版 (31字节) [✓ 验证通过]
-│   ├── quine_py2_compat.py     # Python 2/3 兼容 [✓ 验证通过]
-│   ├── quine_short.py          # 短版本 [✓ 验证通过]
-│   ├── quine.py                # Python 3 版本
+├── classic/                     # 经典 Quine 实现 (Python 3)
+│   ├── quine.py                # 标准 Quine
+│   ├── quine_short.py          # 极简版
 │   ├── quine.js                # JavaScript
 │   ├── quine.c                 # C 语言
 │   ├── quine.rs                # Rust
 │   ├── quine.go                # Go
 │   └── quine.java              # Java
 │
-├── variants/                    # 变体形式
+├── python2/                     # Python 2.7 兼容版本
+│   ├── README.md               # Python 2 说明
+│   ├── quine_py2.py            # Python 2 Quine
+│   ├── quine_py2_compat.py     # Python 2/3 兼容
+│   ├── quine_simple_py2.py     # 极简版
+│   ├── quine_generator_py2.py  # 生成器
+│   ├── quine_validator_py2.py  # 验证工具
+│   ├── test_quine_py2.py       # 测试套件
+│   └── demo_py2.py             # 演示脚本
+│
+├── variants/                    # 变体形式 (Python 3)
 │   ├── iterative_quine.py       # 迭代 Quine
 │   ├── multiquine.py            # 多语言 Quine
+│   ├── ouroboros/               # 衔尾蛇链
 │   └── ...
 │
-├── generators/                  # Quine 生成器
-│   ├── quine_generator_py2.py  # Python 2 兼容
-│   └── ...
+├── generators/                  # Quine 生成器 (Python 3)
+│   ├── quine_generator.py       # 通用生成器
+│   ├── meta_quine.py            # 元生成器
+│   └── polyglot_generator.py    # 多语言生成器
 │
-├── tests/                       # 测试套件
-│   ├── test_quine_py2.py       # Python 2 测试
-│   └── utils_py2.py            # Python 2 工具
+├── artistic/                    # 艺术性 Quine (Python 3)
+│   ├── ascii_art_quine.py       # ASCII 艺术
+│   ├── game_of_life_quine.py    # 生命游戏
+│   ├── musical_quine.py         # 音乐 Quine
+│   └── qr_quine.py              # 二维码 Quine
 │
-└── tools/                       # 辅助工具
-    ├── quine_validator_py2.py  # Python 2 验证器
-    └── ...
+├── tests/                       # 测试套件 (Python 3)
+│   ├── test_quine.py            # 主测试
+│   └── utils.py                 # 工具函数
+│
+└── tools/                       # 辅助工具 (Python 3)
+    ├── quine_validator.py       # 验证器
+    ├── size_optimizer.py        # 大小优化器
+    └── visualizer.py            # 可视化工具
 ```
 
 ## 🎯 核心原理
@@ -84,10 +111,21 @@ Quine 的实现基于**不动点定理**（Kleene's Recursion Theorem）。一�
 
 ## 📖 经典示例
 
-### Python 极简 Quine (31 字节)
+### Python 3 极简 Quine (29 字符)
 
 ```python
-s='s=%r;print s%%s';print s%s
+_='_=%r;print(_%%_)';print(_%_)
+```
+
+### Python 3 带注释版本
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Python 3 Quine
+"""
+s='s=%r;print(s%%s)';print(s%s)
 ```
 
 ### Python 2/3 兼容版本
@@ -100,22 +138,19 @@ s="s=%r;print(s%%s)"
 print(s%s)
 ```
 
-## 🔧 Python 版本兼容性
+## 🐍 Python 版本说明
 
-### Python 2.7 环境
+### Python 3 (推荐)
 
-当前系统使用 Python 2.7，请使用以下文件：
+- **位置**: `classic/`, `generators/`, `tests/`, `tools/`, `variants/`, `artistic/`
+- **特性**: 类型注解、f-strings、现代语法
+- **使用方法**: `python3 <file>`
 
-- `classic/quine_py2.py` - 标准 Quine
-- `classic/quine_simple_py2.py` - 极简 Quine
-- `classic/quine_py2_compat.py` - 兼容版本
-- `demo_py2.py` - 演示脚本
-- `tests/test_quine_py2.py` - 测试套件
-- `tools/quine_validator_py2.py` - 验证工具
+### Python 2.7 (兼容)
 
-### Python 3 环境
-
-如有 Python 3，可使用原始文件（无 `_py2` 后缀）。
+- **位置**: `python2/`
+- **说明**: Python 2 已于 2020 年停止维护，仅用于兼容性
+- **使用方法**: `python python2/<file>`
 
 ## 🎨 变体类型
 
@@ -148,7 +183,7 @@ print(s%s)
 | FAQ.md | 常见问题解答 |
 | PROJECT_SUMMARY.md | 项目完整摘要 |
 | FIXES_REPORT.md | 修复报告 |
-| PYTHON_VERSIONS.md | Python 版本兼容性说明 |
+| python2/README.md | Python 2 版本说明 |
 
 ## 🔗 相关资源
 
@@ -161,6 +196,6 @@ MIT License - 自由使用和学习！
 
 ---
 
-**修复状态**: 所有核心 Quine 已修复并通过验证 ✓
+**GitHub**: https://github.com/bit-cook/Quine
 
 > "Yields falsehood when preceded by its quotation" yields falsehood when preceded by its quotation.
