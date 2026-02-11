@@ -94,98 +94,17 @@ Quine/
 └── tools/                  # 辅助工具 (验证器、优化器)
 ```
 
-## 🎯 核心原理
+## ⚙️ 配置说明 (增强版)
 
-Quine 的实现基于**不动点定理**（Kleene's Recursion Theorem）。一个典型的 Quine 包含两个部分：
+对于 `enhanced_quine.py`，您可以通过 `config.json` 进行行为定制：
 
-1. **数据部分**：存储程序的代码表示
-2. **代码部分**：将数据解码并输出
-
-经典结构模式：
+```json
+{
+    "output_format": "text",
+    "language": "en",
+    "plugins_enabled": true
+}
 ```
-程序 = 数据 + 使用数据输出 "数据 + 使用数据输出"
-```
-
-## 📖 经典示例
-
-### Python 3 极简 Quine (29 字符)
-
-```python
-_='_=%r;print(_%%_)';print(_%_)
-```
-
-### Python 3 带注释版本
-
-```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Python 3 Quine
-"""
-s='s=%r;print(s%%s)';print(s%s)
-```
-
-### Python 2/3 兼容版本
-
-```python
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-s="s=%r;print(s%%s)"
-print(s%s)
-```
-
-## 🐍 Python 版本说明
-
-### Python 3 (推荐)
-
-- **位置**: `classic/`, `generators/`, `tests/`, `tools/`, `variants/`, `artistic/`
-- **特性**: 类型注解、f-strings、现代语法
-- **使用方法**: `python3 <file>`
-
-### Python 2.7 (兼容)
-
-- **位置**: `python2/`
-- **说明**: Python 2 已于 2020 年停止维护，仅用于兼容性
-- **使用方法**: `python python2/<file>`
-
-## 🎨 变体类型
-
-### 1. 迭代 Quine (Iterative Quine)
-程序 A 输出 B，B 输出 C，C 输出 A，形成一个循环。
-
-### 2. 多语言 Quine (Multiquine)
-同一个源文件可以被多种编程语言正确解释。
-
-### 3. 衔尾蛇 (Ouroboros)
-程序 A 输出程序 B 的源代码，B 输出 C 的源代码...最终 Z 输出 A 的源代码。
-
-## 🧪 编程挑战
-
-1. **最短 Quine**：用最少的字符实现
-2. **迭代 Quine**：创建 2+ 循环
-3. **多语言 Quine**：同一文件多语言运行
-4. **抗辐射 Quine**：容错版本
-
-完整挑战列表见 `CHALLENGES.md`。
-
-## 📝 文档索引
-
-| 文件 | 内容 |
-|------|------|
-| README.md | 项目介绍与快速开始 |
-| THEORY.md | Kleene 不动点定理等理论分析 |
-| EXAMPLES.md | 各种 Quine 示例与解析 |
-| CHALLENGES.md | 25 个编程挑战 |
-| FAQ.md | 常见问题解答 |
-| PROJECT_SUMMARY.md | 项目完整摘要 |
-| FIXES_REPORT.md | 修复报告 |
-| python2/README.md | Python 2 版本说明 |
-
-## 🔗 相关资源
-
-- [Wikipedia - Quine](https://en.wikipedia.org/wiki/Quine_(computing))
-- [Rosetta Code - Quine](https://rosettacode.org/wiki/Quine)
 
 ## 📝 许可证
 
@@ -195,4 +114,6 @@ MIT License
 
 > "Yields falsehood when preceded by its quotation" yields falsehood when preceded by its quotation.
 >
-> -- Quine's Paradox
+> "‘在其引用之后产生谬误’在其引用之后产生谬误。"
+>
+> -- Quine's Paradox (奎因悖论)
