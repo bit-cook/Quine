@@ -22,9 +22,43 @@ Quine 的存在并非巧合，而是**克莱尼递归定理 (Kleene's Recursion 
 
 程序的执行逻辑往往是：**使用数据部分来重构并输出代码部分，同时输出数据部分本身。**
 
-## 🚀 快速开始
+经典结构模式：
+```text
+程序 = 数据 + 使用数据输出 "数据 + 使用数据输出"
+```
 
-### 1. 验证经典 Quine
+## � 经典示例
+
+### Python 3 极简 Quine (29 字符)
+
+```python
+_='_=%r;print(_%%_)';print(_%_)
+```
+
+### Python 3 标准版 (带注释)
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Python 3 Quine
+"""
+s='s=%r;print(s%%s)';print(s%s)
+```
+
+### Python 2/3 兼容版本
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+s="s=%r;print(s%%s)"
+print(s%s)
+```
+
+## �🚀 快速开始
+
+### 1. 验证 Quine
 
 最直接验证 Quine 的方法是将输出重定向并与源文件比对。
 
@@ -32,7 +66,7 @@ Quine 的存在并非巧合，而是**克莱尼递归定理 (Kleene's Recursion 
 # 标准 Python 3 实现
 python3 classic/quine.py | diff - classic/quine.py
 
-# 极简版本 (29 字符)
+# 极简版本
 python3 classic/quine_short.py | diff - classic/quine_short.py
 
 # 如果 diff 没有输出，说明源文件与输出完全一致，验证成功！
@@ -63,19 +97,7 @@ python3 enhanced_quine.py
 *   **工程化实验**: 尝试将配置管理 (`config.json`) 和插件机制 (`plugins/`) 引入 Quine 设计（见 `enhanced_quine.py`）。
 *   **质量保证**: 拥有完整的单元测试 (`tests_new/`) 和 CI/CD 流水线，确保代码的严格自指性。
 
-## 📁 文档索引
-
-为了帮助您更好地理解 Quine，我们整理了详尽的文档：
-
-| 文档 | 说明 |
-|------|------|
-| [THEORY.md](THEORY.md) | **理论基础**：深入解析不动点定理与 Quine 的数学原理 |
-| [EXAMPLES.md](EXAMPLES.md) | **实例解析**：各种语言和形式的 Quine 代码详解 |
-| [CHALLENGES.md](CHALLENGES.md) | **编程挑战**：25 个不同难度的 Quine 编写任务 |
-| [FAQ.md](FAQ.md) | **常见问题**：关于 Quine 的定义、边界与技巧 |
-| [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) | **项目摘要**：项目结构与内容的完整概览 |
-
-## 📂 项目结构
+##  项目结构
 
 ```
 Quine/
@@ -94,17 +116,55 @@ Quine/
 └── tools/                  # 辅助工具 (验证器、优化器)
 ```
 
-## ⚙️ 配置说明 (增强版)
+## 🐍 Python 版本说明
 
-对于 `enhanced_quine.py`，您可以通过 `config.json` 进行行为定制：
+### Python 3 (推荐)
+- **位置**: `classic/`, `generators/`, `tests/`, `tools/`, `variants/`, `artistic/`
+- **特性**: 类型注解、f-strings、现代语法
+- **使用方法**: `python3 <file>`
 
-```json
-{
-    "output_format": "text",
-    "language": "en",
-    "plugins_enabled": true
-}
-```
+### Python 2.7 (兼容)
+- **位置**: `python2/`
+- **说明**: Python 2 已于 2020 年停止维护，仅用于兼容性
+- **使用方法**: `python python2/<file>`
+
+## 🎨 变体类型
+
+### 1. 迭代 Quine (Iterative Quine)
+程序 A 输出 B，B 输出 C，C 输出 A，形成一个循环。
+
+### 2. 多语言 Quine (Multiquine)
+同一个源文件可以被多种编程语言正确解释。
+
+### 3. 衔尾蛇 (Ouroboros)
+程序 A 输出程序 B 的源代码，B 输出 C 的源代码...最终 Z 输出 A 的源代码。
+
+## 🧪 编程挑战
+
+1. **最短 Quine**：用最少的字符实现
+2. **迭代 Quine**：创建 2+ 循环
+3. **多语言 Quine**：同一文件多语言运行
+4. **抗辐射 Quine**：容错版本
+
+完整挑战列表见 `CHALLENGES.md`。
+
+## 📝 文档索引
+
+为了帮助您更好地理解 Quine，我们整理了详尽的文档：
+
+| 文档 | 说明 |
+|------|------|
+| [THEORY.md](THEORY.md) | **理论基础**：深入解析不动点定理与 Quine 的数学原理 |
+| [EXAMPLES.md](EXAMPLES.md) | **实例解析**：各种语言和形式的 Quine 代码详解 |
+| [CHALLENGES.md](CHALLENGES.md) | **编程挑战**：25 个不同难度的 Quine 编写任务 |
+| [FAQ.md](FAQ.md) | **常见问题**：关于 Quine 的定义、边界与技巧 |
+| [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) | **项目摘要**：项目结构与内容的完整概览 |
+| [FIXES_REPORT.md](FIXES_REPORT.md) | **修复报告**：历史问题修复记录 |
+
+## 🔗 相关资源
+
+- [Wikipedia - Quine](https://en.wikipedia.org/wiki/Quine_(computing))
+- [Rosetta Code - Quine](https://rosettacode.org/wiki/Quine)
 
 ## 📝 许可证
 
