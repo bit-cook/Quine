@@ -168,9 +168,11 @@ Quine/
 
 ## 📝 许可证
 
-MIT License
+MIT License - 自由使用和学习！
 
 ---
+
+**GitHub**: https://github.com/bit-cook/Quine
 
 > "Yields falsehood when preceded by its quotation" yields falsehood when preceded by its quotation.
 >
