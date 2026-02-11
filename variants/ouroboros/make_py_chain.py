@@ -29,6 +29,8 @@ def generate(count, prefix="py_chain_"):
         path = base / name
         code = TEMPLATE.format(names=repr(names))
         path.write_text(code, encoding="utf-8")
+        print(f"Generated: {name}")
+    print(f"Successfully generated chain of {count} files in {base}")
 
 
 def main():
