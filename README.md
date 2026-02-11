@@ -27,7 +27,7 @@ Quine 的存在并非巧合，而是**克莱尼递归定理 (Kleene's Recursion 
 程序 = 数据 + 使用数据输出 "数据 + 使用数据输出"
 ```
 
-## � 经典示例
+## 📖 经典示例
 
 ### Python 3 极简 Quine (29 字符)
 
@@ -56,7 +56,7 @@ s="s=%r;print(s%%s)"
 print(s%s)
 ```
 
-## �🚀 快速开始
+##  快速开始
 
 ### 1. 验证 Quine
 
@@ -97,7 +97,7 @@ python3 enhanced_quine.py
 *   **工程化实验**: 尝试将配置管理 (`config.json`) 和插件机制 (`plugins/`) 引入 Quine 设计（见 `enhanced_quine.py`）。
 *   **质量保证**: 拥有完整的单元测试 (`tests_new/`) 和 CI/CD 流水线，确保代码的严格自指性。
 
-##  项目结构
+## 📂 项目结构
 
 ```
 Quine/
