@@ -9,6 +9,15 @@ Quine 项目演示脚本
 import os
 import sys
 import subprocess
+import io
+
+# 解决 Windows 环境下的编码问题
+if sys.platform == 'win32':
+    try:
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
 
 def print_header(title):
     print("\n" + "="*60)
@@ -25,11 +34,11 @@ def print_code(code, language="python"):
 def run_quine(filepath):
     """运行 Quine 并返回输出"""
     try:
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             original = f.read()
         
         result = subprocess.Popen(
-            ['python', filepath],
+            [sys.executable, filepath],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
@@ -94,17 +103,28 @@ def demo_iterative_quine():
     
     # 保存 B 并运行
     temp_file = "temp_b.py"
-    with open(temp_file, 'w') as f:
+    with open(temp_file, 'w', encoding='utf-8') as f:
         f.write(output)
     
+    # 使用 UTF-8 环境运行子进程，防止 Windows 下的编码错误
+    env = os.environ.copy()
+    env["PYTHONUTF8"] = "1"
+    
     result = subprocess.Popen(
-        ['python', temp_file],
-        stdout=subprocess.PIPE
+        [sys.executable, temp_file],
+        stdout=subprocess.PIPE,
+        env=env
     )
     b_output, _ = result.communicate()
-    b_output = b_output.decode('utf-8', errors='replace')
     
-    os.remove(temp_file)
+    # 安全解码
+    if b_output is None:
+        b_output = ""
+    elif isinstance(b_output, bytes):
+        b_output = b_output.decode('utf-8', errors='replace')
+    
+    if os.path.exists(temp_file):
+        os.remove(temp_file)
     
     original = original.replace('\r\n', '\n').replace('\r', '\n')
     b_output = b_output.replace('\r\n', '\n').replace('\r', '\n')
@@ -156,20 +176,28 @@ def show_statistics():
     print("    {:12s}: {}".format("总计", total))
 
 def main():
-    print("""
+    try:
+        print("""
     ██████╗ ██╗   ██╗██╗███╗   ██╗███████╗
     ██╔═══██╗██║   ██║██║████╗  ██║██╔════╝
     ██║   ██║██║   ██║██║██╔██╗ ██║█████╗  
     ██║▄▄ ██║██║   ██║██║██║╚██╗██║██╔══╝  
     ╚██████╔╝╚██████╔╝██║██║ ╚████║███████╗
      ╚══▀▀═╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝
-    """)
+        """)
+    except Exception:
+        print("\n    === QUINE PROJECT ===\n")
+        
     print("    自复制程序的艺术")
     print()
     
     # 获取脚本所在目录
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(script_dir)
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        if script_dir:
+            os.chdir(script_dir)
+    except Exception as e:
+        print("  警告: 无法切换到脚本目录: {}".format(e))
     
     demo_basic_quine()
     demo_minimal_quine()
