@@ -34,9 +34,8 @@ def run_quine(filepath):
             stderr=subprocess.PIPE
         )
         stdout, stderr = result.communicate()
-        output = stdout
+        output = stdout.decode('utf-8', errors='replace')
         
-        # 标准化换行符
         original = original.replace('\r\n', '\n').replace('\r', '\n')
         output = output.replace('\r\n', '\n').replace('\r', '\n')
         
@@ -103,10 +102,10 @@ def demo_iterative_quine():
         stdout=subprocess.PIPE
     )
     b_output, _ = result.communicate()
+    b_output = b_output.decode('utf-8', errors='replace')
     
     os.remove(temp_file)
     
-    # 标准化
     original = original.replace('\r\n', '\n').replace('\r', '\n')
     b_output = b_output.replace('\r\n', '\n').replace('\r', '\n')
     

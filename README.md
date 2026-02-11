@@ -139,6 +139,39 @@ Quine/
 ### 3. 衔尾蛇 (Ouroboros)
 程序 A 输出程序 B 的源代码，B 输出 C 的源代码...最终 Z 输出 A 的源代码。
 
+## 🔬 高级玩法：Ouroboros 链实验套件
+
+本仓库提供了一套围绕衔尾蛇链的高级工具，方便你从“概念”走到“可验证的实验”：
+
+- **生成任意长度的 Python 链**  
+  使用生成器在 `variants/ouroboros/` 下创建 N 节点闭环：
+
+  ```bash
+  # 生成 3 节点链：py_chain_0.py, py_chain_1.py, py_chain_2.py
+  python variants/ouroboros/make_py_chain.py 3
+  ```
+
+- **自动验证闭环性质**  
+  使用验证器检查“每个节点是否输出下一个节点的源码”：
+
+  ```bash
+  python tools/ouroboros_validator.py
+  ```
+
+- **可视化链结构**  
+  文本 & Graphviz 视图帮助直观看到链路：
+
+  ```bash
+  python tools/ouroboros_visualizer.py
+  ```
+
+  可以将输出的 DOT 保存为文件，用 Graphviz 渲染为图片。
+
+理论背景与更详细的实例解释，见：
+
+- `EXAMPLES.md` 中的「Level 5：Ouroboros 链」与高级实战部分  
+- `THEORY.md` 中的「5.3 Ouroboros 链与多步不动点」
+
 ## 🧪 编程挑战
 
 1. **最短 Quine**：用最少的字符实现

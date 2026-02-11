@@ -148,6 +148,44 @@ A single source file is interpreted correctly as a quine in multiple programming
 
 Program A outputs the source of B, B outputs C, …, and the last program outputs A, forming a closed “Ouroboros” loop.
 
+## 🔬 Advanced: Ouroboros Chain Toolkit
+
+The repository includes a small toolkit around Ouroboros chains, so you can move from the concept to concrete, verifiable experiments:
+
+- **Generate Python chains of arbitrary length**  
+  In `variants/ouroboros/`, use the generator to create an N‑node cycle:
+
+  ```bash
+  # Generate a 3‑node chain: py_chain_0.py, py_chain_1.py, py_chain_2.py
+  python variants/ouroboros/make_py_chain.py 3
+  ```
+
+- **Automatically validate the closed loop**  
+  Use the validator to check that each node prints the exact source of the next node:
+
+  ```bash
+  python tools/ouroboros_validator.py
+  ```
+
+- **Visualize the chain structure**  
+  Get both a text view and a Graphviz DOT description:
+
+  ```bash
+  python tools/ouroboros_visualizer.py
+  ```
+
+  Save the DOT output and render it with Graphviz, for example:
+
+  ```bash
+  python tools/ouroboros_visualizer.py > chain.dot
+  dot -Tpng chain.dot -o chain.png
+  ```
+
+For the theoretical background and detailed walkthroughs, see:
+
+- Level 5 “Ouroboros chain” and the advanced example section in `EXAMPLES.md`
+- Section 5.3 “Ouroboros chains and multi‑step fixed points” in `THEORY.md`
+
 ## 🧪 Coding Challenges
 
 The repository also includes a series of quine‑related programming challenges:

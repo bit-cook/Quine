@@ -178,18 +178,112 @@ print(s % s)
 
 </details>
 
-```python
-# 练习 2：创建一个输出 "Hello" 然后自身代码的 Quine
-s = ???
-```
+## 分级教学：从第一个 Quine 到 Ouroboros 链
 
-<details>
-<summary>点击查看答案</summary>
+下面给出一个循序渐进的学习路径，对应仓库中的实际文件，方便你一边读文档一边跑代码。
+
+### Level 1：5 行 Python Quine（入门版）
+
+目标：写出一个结构清晰、便于理解的多行 Quine。
+
+核心思路：
 
 ```python
-s = "print('Hello')\ns=%r\nprint(s%%s)"
-exec(s)
+s = 's = %r\nprint(s %% s)'
 print(s % s)
 ```
 
-</details>
+- 第 1 行：把“程序本身”当作字符串模板存进 `s`  
+- 第 2 行：用 `s` 自己去填充 `%r`，得到完整源码并打印出来  
+
+建议：先在交互式环境里改动字符串内容，观察输出如何变化。
+
+### Level 2：带注释与文档字符串的 Quine
+
+对应示例：`classic/quine.py`
+
+- 在 Level 1 的基础上，加上 shebang、编码声明、文档字符串、注释等“现实世界”元素  
+- 难点在于：所有这些头部内容也必须被包含在字符串模板中，否则“输出 ≠ 源文件”
+
+练习方向：尝试为自己的 Quine 增加模块级文档字符串、作者信息等，同时保持验证通过。
+
+### Level 3：迭代 Quine（A → B → A）
+
+对应示例：`variants/iterative_quine.py`
+
+概念：  
+不再要求“一个程序直接打印自己”，而是构造一个长度为 2 的循环：
+
+- 程序 A 输出程序 B 的源码  
+- 程序 B 输出程序 A 的源码  
+
+当你像 `demo.py` 那样执行 A 并把输出保存为 B、再执行 B 时，整体行为形成 A → B → A 的闭环。
+
+### Level 4：Multiquine（多语言自复制）
+
+对应示例：`variants/multiquine.py`
+
+目标：让同一个源文件在多种语言下都能作为 Quine 使用。典型做法是：
+
+- 让不同语言把同一块文本“看成”各自语法下的注释或字符串  
+- 巧妙安排分隔符，使得每种语言只执行属于自己的那部分代码
+
+练习建议：
+
+1. 阅读 `multiquine.py`，找出“属于 Python 的段落”和“属于其他语言的段落”  
+2. 尝试扩展一个新的语言分支（例如再加一个 bash 或 Ruby 路径）
+
+### Level 5：Ouroboros 链（衔尾蛇循环）
+
+对应示例：`variants/ouroboros/chain.py` 及同目录下其他文件。
+
+概念：  
+构造一条长度为 N 的程序链：
+
+> A 输出 B 的源码，B 输出 C，…，最后 Z 输出 A。
+
+这是一种“多步不动点”的构造方式，直观呈现了间接自指：  
+没有哪个程序直接打印自己，但整个环路作为一个整体却在“输出自身”。
+
+建议体验方式：
+
+1. 依次运行链条中的程序，观察每一步的输出与下一个文件内容的对应关系  
+2. 尝试修改链条中的某一环节，观察整体是否仍能形成闭环  
+3. 思考如何用验证脚本自动检查“从 A 出发 N 步之后是否回到 A”
+
+#### 高级实战：三节点 Python Ouroboros + 自动验证
+
+本仓库在 `variants/ouroboros/` 中提供了一条可验证的 3 节点 Python 链：
+
+```text
+py_chain_0.py → py_chain_1.py → py_chain_2.py → py_chain_0.py
+```
+
+- 每个节点都会读取链中“下一个节点”的源码并原样打印  
+- 组合起来就是一个真正的闭环 Ouroboros 链
+
+你可以使用专用验证脚本来自动检查整个环路：
+
+```bash
+python tools/ouroboros_validator.py
+```
+
+输出示例：
+
+```text
+Ouroboros chain validation
+============================================================
+OK  py_chain_0.py → py_chain_1.py
+OK  py_chain_1.py → py_chain_2.py
+OK  py_chain_2.py → py_chain_0.py
+```
+
+如果想构造自己的 N 节点链，只需要：
+
+1. 在 `variants/ouroboros/` 下新增类似结构的 `py_chain_k.py` 文件  
+2. 同步更新每个文件里的 `names = [...]` 顺序  
+3. 调用验证器时显式指定链顺序：
+
+```bash
+python tools/ouroboros_validator.py py_chain_0.py py_chain_1.py py_chain_2.py
+```

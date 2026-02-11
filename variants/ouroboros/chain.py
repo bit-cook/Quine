@@ -38,7 +38,7 @@ print(next_code)
 ''',
             'ruby': lambda nc: f'''#!/usr/bin/env ruby
 # 衔尾蛇链 - Ruby 节点
-next_code = {nc.inspect}
+next_code = {json.dumps(nc)}
 puts next_code
 ''',
             'perl': lambda nc: f'''#!/usr/bin/env perl
