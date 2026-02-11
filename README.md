@@ -2,9 +2,7 @@
 
 [English Documentation](README_EN.md)
 
-> "A quine is a computer program which takes no input and produces a copy of its own source code as its only output."
->
-> "Quine 是一个不接受任何输入，唯一的任务就是输出其源代码本身的计算机程序。"
+> **Quine** 是一种无需外部输入、在运行中完整重构自身源代码的自复制程序。它是计算理论中“不动点”的直观体现，展示了代码如何像生物一样自我繁衍。
 
 ## 📚 项目简介
 
@@ -56,7 +54,7 @@ s="s=%r;print(s%%s)"
 print(s%s)
 ```
 
-##  快速开始
+## 🚀 快速开始
 
 ### 1. 验证 Quine
 
@@ -87,6 +85,28 @@ python3 demo.py
 ```bash
 python3 enhanced_quine.py
 ```
+
+## 🗺️ 学习路线图
+
+本仓库内容丰富，建议按照以下路径循序渐进：
+
+1.  **👀以此为始 (Level 0)**:
+    *   运行 `python3 demo.py`，直观感受什么是“程序打印自己”。
+    *   阅读本 README 的“核心原理”部分。
+
+2.  **👶 初学乍练 (Level 1)**:
+    *   阅读 [EXAMPLES.md](EXAMPLES.md) 中的“Level 1”和“Level 2”，理解 Quine 的基本构造（Code + Data）。
+    *   尝试运行 `classic/quine.py` 并修改它，看看会发生什么。
+
+3.  **🧑‍💻 登堂入室 (Level 2)**:
+    *   阅读 [THEORY.md](THEORY.md) 了解 Kleene 不动点定理。
+    *   完成 [CHALLENGES.md](CHALLENGES.md) 中的前 3 个挑战。
+    *   体验 `variants/iterative_quine.py`（A→B→A 循环）。
+
+4.  **🚀 炉火纯青 (Level 3)**:
+    *   探索 `variants/ouroboros/`，使用生成器创建自己的 N 节点自指链。
+    *   研究 `variants/multiquine.py`，理解多语言共存的技巧。
+    *   使用 `tools/` 里的验证器和可视化工具辅助研究。
 
 ## ✨ 功能特性
 

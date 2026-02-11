@@ -2,7 +2,7 @@
 
 [中文文档 (Chinese README)](README.md)
 
-> "A quine is a computer program which takes no input and produces a copy of its own source code as its only output."
+> **Quine** is a self-replicating program that reconstructs its own source code during execution without any external input. It is a direct manifestation of "fixed points" in computability theory, demonstrating how code can reproduce itself like a living organism.
 
 ## 📚 Overview
 
@@ -91,6 +91,28 @@ This project also experiments with an “engineering‑oriented” quine that in
 ```bash
 python3 enhanced_quine.py
 ```
+
+## 🗺️ Learning Roadmap
+
+This repository is packed with content. We recommend the following path:
+
+1.  **👀 Start Here (Level 0)**:
+    *   Run `python3 demo.py` to see "programs printing themselves" in action.
+    *   Read the "Core Principles" section in this README.
+
+2.  **👶 Beginner (Level 1)**:
+    *   Read "Level 1" and "Level 2" in [EXAMPLES.md](EXAMPLES.md) to understand the basic Code + Data structure.
+    *   Try running `classic/quine.py` and modifying it to see what happens.
+
+3.  **🧑‍💻 Intermediate (Level 2)**:
+    *   Read [THEORY.md](THEORY.md) to learn about Kleene's Recursion Theorem.
+    *   Complete the first 3 challenges in [CHALLENGES.md](CHALLENGES.md).
+    *   Experiment with `variants/iterative_quine.py` (A→B→A cycle).
+
+4.  **🚀 Advanced (Level 3)**:
+    *   Explore `variants/ouroboros/` and use the generator to create your own N-node self-referential chains.
+    *   Study `variants/multiquine.py` to understand polyglot techniques.
+    *   Use the validators and visualizers in `tools/` for your research.
 
 ## ✨ Features
 
