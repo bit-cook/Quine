@@ -42,6 +42,8 @@ def run_quine(filepath):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
+        # （中严重）子进程调用未设置超时：如果某个示例意外进入死循环/阻塞，这里会导致 demo 永久卡住。
+        # 建议：communicate(timeout=...) 或改用 subprocess.run(..., timeout=...)
         stdout, stderr = result.communicate()
         output = stdout.decode('utf-8', errors='replace')
         
@@ -115,6 +117,7 @@ def demo_iterative_quine():
         stdout=subprocess.PIPE,
         env=env
     )
+    # （中严重）同上：此处同样没有超时保护，链式/生成式 Quine 一旦异常挂起会卡住整个演示。
     b_output, _ = result.communicate()
     
     # 安全解码
