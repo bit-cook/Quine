@@ -44,6 +44,11 @@ exec(data)
 
 # Quine 验证代码
 if '--verify' in __import__('sys').argv:
+    # （高严重）这里的验证逻辑不成立：
+    # - original 是“当前文件源码”（包含模板、注释、data 等全部内容）
+    # - output 却被设置成 data（仅为“原始代码片段”字符串），并不是程序运行时 stdout 输出
+    # 因此 original == output 基本必然为 False，验证结果不可信。
+    # 建议：用子进程运行当前文件捕获 stdout，与 original 做换行规范化后比较。
     import hashlib
     with open(__file__, 'r') as f:
         original = f.read()
