@@ -47,7 +47,7 @@ def describe_layout(data: bytes) -> str:
     eocd_sig = 0x06054B50
     idx = data.rfind(struct.pack("<I", eocd_sig))
     if idx != -1:
-        (_, _, _, _, total, _, cd_size, cd_off, _) = struct.unpack("<IHHHHIIH", data[idx:idx + 22])
+        (_, _, _, _, total, cd_size, cd_off, _) = struct.unpack("<IHHHHIIH", data[idx:idx + 22])
         lines.append(f"  EOCD @ {idx}: entries={total}, central-dir @ {cd_off} (size {cd_size})")
     lines.append(f"  总大小: {len(data)} 字节")
     return "\n".join(lines)
