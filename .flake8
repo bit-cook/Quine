@@ -1,0 +1,18 @@
+[flake8]
+# The python2/ directory intentionally uses Python 2 syntax (print statements),
+# which Python-3 flake8 reports as E999. Exclude it (and generated/vendored dirs).
+exclude =
+    .git,
+    __pycache__,
+    .pytest_cache,
+    build,
+    dist,
+    docs,
+    python2
+max-line-length = 100
+max-complexity = 12
+extend-ignore =
+    # Quine source files are intentionally terse/dense; keep lint signal high
+    # by not failing on stylistic nits project-wide.
+    E203,
+    W503

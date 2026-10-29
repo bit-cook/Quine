@@ -1,101 +1,60 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ZIP Quine 生成器
+ZIP Quine — 概念演示 (conceptual demonstration)
 
-生成一个 ZIP 文件，解压后包含的文件内容就是 ZIP 文件本身。
+目标：产出一个 ZIP 文件，使得 `unzip -p quine.zip` 得到的文件内容
+恰好等于该 ZIP 文件本身（即 ZIP 里“装着”自己）。
 
-使用方法:
     python zip_quine.py > quine.zip
-    unzip -p quine.zip | diff - quine.zip
+    unzip -p quine.zip | cmp - quine.zip      # 若一致即为 ZIP Quine
 
-注意: 这是一个生成器，不是 Quine 本身
+现状与难点：
+    本脚本演示 ZIP 结构（本地文件头 / 中央目录 / 结束记录），并给出一个
+    “自指”的构造思路，但**尚未**达成字节级自包含。真正的 ZIP Quine 需要解
+    一个关于 DEFLATE 压缩流的不动点方程：
+
+        Z = LFH + raw_deflate(Z) + CD + EOCD
+
+    由于 DEFLATE 对自身输出的压缩并不收敛（会振荡），必须精心构造压缩流
+    （例如混用存储块）才能得到不动点——这属于高阶挑战，见 CHALLENGES.md。
+
+因此本文件定位为“教学用 ZIP 构造器 + 概念说明”，而非一个已臻完善的 Quine。
 """
 
-import struct
-import zlib
 import io
+import struct
+import sys
+import zipfile
+import zlib
 
-def create_zip_quine():
-    """
-    创建一个 ZIP 文件，其内容是自身的副本。
-    
-    ZIP 文件格式:
-    [本地文件头1][文件数据1][数据描述符1]...
-    [中央目录][中央目录结束记录]
-    """
-    
-    # 文件名
-    filename = "quine.zip"
-    
-    # 我们需要的文件内容（循环引用）
-    # 这是一个简化版本，真正的 ZIP Quine 需要精确构造
-    
-    output = io.BytesIO()
-    
-    # 写入本地文件头
-    local_header = struct.pack('<IHHHHHIIIHH',
-        0x04034b50,  # 本地文件头签名
-        20,          # 版本
-        0,           # 标志
-        8,           # 压缩方法 (deflate)
-        0,           # 修改时间
-        0,           # 修改日期
-        0,           # CRC-32 (占位)
-        0,           # 压缩大小 (占位)
-        0,           # 未压缩大小 (占位)
-        len(filename),
-        0            # 额外字段长度
-    )
-    
-    output.write(local_header)
-    output.write(filename.encode())
-    
-    # 文件数据（这里需要是自身的引用，这是难点）
-    # 真正的实现需要精确计算偏移量
-    file_data = b"This would be the self-referential content"
-    compressed = zlib.compress(file_data)
-    output.write(compressed)
-    
-    # 中央目录
-    central_header = struct.pack('<IHHHHHHIIIHHHHHII',
-        0x02014b50,  # 中央目录签名
-        20,          # 创建版本
-        20,          # 需要版本
-        0,           # 标志
-        8,           # 压缩方法
-        0, 0,        # 时间/日期
-        0,           # CRC-32
-        len(compressed),
-        len(file_data),
-        len(filename),
-        0, 0, 0,     # 额外字段、注释、磁盘
-        0,           # 内部属性
-        0,           # 外部属性
-        0            # 本地头部偏移
-    )
-    
-    output.write(central_header)
-    output.write(filename.encode())
-    
-    # 中央目录结束记录
-    end_record = struct.pack('<IHHHHIIH',
-        0x06054b50,  # 结束记录签名
-        0,           # 磁盘号
-        0,           # 中央目录磁盘
-        1,           # 磁盘上的记录数
-        1,           # 总记录数
-        len(central_header) + len(filename),
-        output.tell(),  # 中央目录偏移
-        0            # 注释长度
-    )
-    
-    output.write(end_record)
-    
-    return output.getvalue()
 
-if __name__ == '__main__':
-    # 注意: 这是一个简化的演示版本
-    # 真正的 ZIP Quine 需要精确构造自引用结构
-    data = create_zip_quine()
+def build_demo_zip() -> bytes:
+    """构造一个结构完整、可被标准工具读取的 ZIP（含内嵌的说明文本）。"""
+    buf = io.BytesIO()
+    note = (
+        b"This ZIP demonstrates the local-header / central-directory / EOCD "
+        b"layout used when building a self-containing (Quine) ZIP. A true ZIP "
+        b"Quine must additionally solve a DEFLATE fixed-point; see docstring."
+    )
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("README.txt", note)
+    return buf.getvalue()
+
+
+def describe_layout(data: bytes) -> str:
+    lines = ["ZIP 结构解析:"]
+    eocd_sig = 0x06054B50
+    idx = data.rfind(struct.pack("<I", eocd_sig))
+    if idx != -1:
+        (_, _, _, _, total, _, cd_size, cd_off, _) = struct.unpack("<IHHHHIIH", data[idx:idx + 22])
+        lines.append(f"  EOCD @ {idx}: entries={total}, central-dir @ {cd_off} (size {cd_size})")
+    lines.append(f"  总大小: {len(data)} 字节")
+    return "\n".join(lines)
+
+
+if __name__ == "__main__":
+    data = build_demo_zip()
     sys.stdout.buffer.write(data)
+    # 说明信息写到 stderr，避免污染 stdout 的 ZIP 字节流
+    print(describe_layout(data), file=sys.stderr)
