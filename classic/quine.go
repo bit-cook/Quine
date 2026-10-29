@@ -1,15 +1,9 @@
-/*
- * Go Quine - 经典实现
- * 
- * 运行和验证:
- *     go run quine.go | diff - quine.go
- */
-
+// Quine in Go - verify: go run quine.go | diff - quine.go
 package main
 
 import "fmt"
 
 func main() {
-	s := "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := %c%s%c\n\tfmt.Printf(s, 34, s, 34)\n}\n"
-	fmt.Printf(s, 34, s, 34)
+	s := "// Quine in Go - verify: go run quine.go | diff - quine.go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := %q\n\tfmt.Printf(s, s)\n}\n"
+	fmt.Printf(s, s)
 }

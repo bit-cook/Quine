@@ -1,39 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-衔尾蛇: Python → JavaScript → Python
+Python -> JavaScript quine emitter.
 
-运行链:
-    python py2js.py > quine.js
-    node qu2js.js > quine.py
-    python quine.py > quine2.js
-    ...
+Running this prints a *self-contained* JavaScript quine. Pipe it to a
+file and verify with Node:
+    python py2js.py > q.js && node q.js | diff - q.js
+
+A fully bidirectional Python<->JavaScript ouroboros is left as an
+advanced challenge (see CHALLENGES.md).
 """
 
-# JavaScript 版本的代码
-js_version = '''/**
- * 衔尾蛇: Python → JavaScript → Python
- * 
- * 这是由 Python 版本生成的 JavaScript 版本
- */
+JS_QUINE = 'var s = "var s = @;\\nconsole.log(s.replace(\'@\',JSON.stringify(s)))";\nconsole.log(s.replace(\'@\',JSON.stringify(s)))\n'
 
-const pyVersion = `#!/usr/bin/env python3
-"""
-衔尾蛇: Python → JavaScript → Python
-
-运行链:
-    python py2js.py > quine.js
-    node qu2js.js > quine.py
-    python quine.py > quine2.js
-    ...
-"""
-
-# JavaScript 版本的代码
-jsVersion = ${JSON.stringify(jsVersion)}
-
-console.log(jsVersion)`;
-
-console.log(pyVersion);
-'''
-
-print(js_version)
+if __name__ == '__main__':
+    print(JS_QUINE, end='')

@@ -1,97 +1,74 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-多语言衔尾蛇链生成器
+多语言衔尾蛇链框架 (Ouroboros chain framework)
 
-生成一个多语言循环链，例如:
-Python → Ruby → Perl → C → Python
+提供一个面向对象的 API，用来生成“自包含”的 N 节点闭环：第 i 个程序运行后
+输出第 (i+1)%N 个程序的完整源代码，最后一个回到第一个。
 
-每种语言输出下一种语言的代码，最后一种输出第一种
+核心技巧是“参数化旋转 Quine”：所有节点共享同一个自描述模板，仅用一个旋转
+计数器 n 区分，因此无需在节点间互相嵌整份源码（那样会无限递归），也不读取
+任何文件——每个节点自身都是一个严格的自复制不动点。
+
+用法:
+    from chain import OuroborosChain
+    OuroborosChain(3).write(".")         # 写 3 个节点到当前目录
+    python chain.py                       # 演示：打印 3 节点链的首个节点
+
+说明:
+    跨语言（如 Python→Ruby→C→Python）的衔尾蛇属于高阶挑战；本框架聚焦于
+    单一语言内可严格验证的自包含闭环，详见 CHALLENGES.md。
 """
 
-import json
+
+def node_source(index: int, count: int) -> str:
+    s_val = (
+        "# Ouroboros node (self-contained)\n"
+        "n = %d\n"
+        "N = %d\n"
+        "s = %r\n"
+        "print(s %% ((n + 1) %% N, N, s))"
+    )
+    return (
+        "# Ouroboros node (self-contained)\n"
+        "n = " + str(index) + "\n"
+        "N = " + str(count) + "\n"
+        "s = " + repr(s_val) + "\n"
+        "print(s % ((n + 1) % N, N, s))\n"
+    )
+
 
 class OuroborosChain:
-    """生成多语言衔尾蛇链"""
-    
-    def __init__(self, languages):
-        """
-        languages: 语言配置列表
-        每项格式: {'name': 'python', 'extension': 'py', 'template': ...}
-        """
-        self.languages = languages
-        self.chain = []
-    
-    def generate_template(self, lang_name, next_code):
-        """
-        为指定语言生成输出下一种语言代码的模板
-        
-        这是简化的框架，实际需要为每种语言定制
-        """
-        templates = {
-            'python': lambda nc: f'''#!/usr/bin/env python3
-"""
-衔尾蛇链 - Python 节点
-"""
-next_code = {repr(nc)}
-print(next_code)
-''',
-            'ruby': lambda nc: f'''#!/usr/bin/env ruby
-# 衔尾蛇链 - Ruby 节点
-next_code = {json.dumps(nc)}
-puts next_code
-''',
-            'perl': lambda nc: f'''#!/usr/bin/env perl
-# 衔尾蛇链 - Perl 节点
-my $next_code = {json.dumps(nc)};
-print $next_code;
-''',
-            'c': lambda nc: f'''#include <stdio.h>
-/* 衔尾蛇链 - C 节点 */
-int main() {{
-    const char* code = {json.dumps(nc)};
-    printf("%s", code);
-    return 0;
-}}
-''',
-        }
-        return templates.get(lang_name, templates['python'])(next_code)
-    
-    def build_chain(self):
-        """构建完整的循环链"""
-        n = len(self.languages)
-        
-        # 从后向前构建（最后一个语言输出第一个）
-        current = self.languages[0]['template']
-        
-        for i in range(n - 1, 0, -1):
-            lang = self.languages[i]
-            current = self.generate_template(lang['name'], current)
-        
-        # 最后生成第一个语言的代码
-        first = self.languages[0]
-        current = self.generate_template(first['name'], current)
-        
-        return current
+    """生成自包含的 N 节点衔尾蛇闭环。"""
 
-# 示例用法
-if __name__ == '__main__':
-    # 定义链中的语言
-    chain_config = [
-        {'name': 'python', 'extension': 'py', 'template': '...'},
-        {'name': 'ruby', 'extension': 'rb', 'template': '...'},
-        {'name': 'perl', 'extension': 'pl', 'template': '...'},
-        {'name': 'c', 'extension': 'c', 'template': '...'},
-    ]
-    
-    generator = OuroborosChain(chain_config)
-    
-    # 输出链的第一个节点
-    print("# 多语言衔尾蛇链生成器")
-    print("# 使用方法: 运行生成的文件，它会输出下一个语言的代码")
-    print()
-    
-    # 这里只是演示框架
-    # 真正的实现需要精心构造每种语言的代码
-    result = generator.build_chain()
-    print(result[:500] + "..." if len(result) > 500 else result)
+    def __init__(self, count: int, prefix: str = "node_"):
+        if count < 2:
+            raise ValueError("count must be at least 2")
+        self.count = count
+        self.prefix = prefix
+
+    def sources(self):
+        return [node_source(i, self.count) for i in range(self.count)]
+
+    def names(self):
+        return ["{}{}.py".format(self.prefix, i) for i in range(self.count)]
+
+    def write(self, directory: str):
+        import os
+        os.makedirs(directory, exist_ok=True)
+        written = []
+        for name, src in zip(self.names(), self.sources()):
+            path = os.path.join(directory, name)
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(src)
+            written.append(path)
+        return written
+
+
+if __name__ == "__main__":
+    chain = OuroborosChain(3, prefix="ouro_")
+    print("# 3-node self-contained Ouroboros chain")
+    print("# Node 0 source (run it to obtain node 1, and so on):\n")
+    print(chain.sources()[0], end="")
+    print("\n# Validate with:  python ../../tools/ouroboros_validator.py "
+          "ouro_0.py ouro_1.py ouro_2.py")

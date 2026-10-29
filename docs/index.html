@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quine · 自复制程序的艺术</title>
+  <meta name="description" content="一个深入探索自复制程序 (Quine) 的实验室：经典、多语言、迭代、衔尾蛇链、生成器，以及一键验证器。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%88%80%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">∀</span>
+        <span class="brand-name">Quine</span>
+      </a>
+      <div class="nav-links">
+        <a href="#what">是什么</a>
+        <a href="#live">在线体验</a>
+        <a href="#gallery">变体图鉴</a>
+        <a href="#theory">理论</a>
+        <a href="#verify">一键验证</a>
+      </div>
+      <a class="nav-cta" href="https://github.com/bit-cook/Quine" target="_blank" rel="noopener">
+        <svg height="18" viewBox="0 0 16 16" width="18" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge"><span class="pulse"></span>所有 Quine 均已通过一键验证</div>
+      <h1 class="hero-title">
+        会<span class="grad">打印自己</span>的程序
+      </h1>
+      <p class="hero-sub">
+        <strong>Quine</strong>（自产生程序）以哲学家 <em>W. V. Quine</em> 之名命名，
+        是无需任何外部输入、在运行中完整重构自身源代码的自复制程序——
+        计算理论中<strong>克莱尼不动点定理</strong>最直观的体现。
+      </p>
+
+      <div class="terminal" id="hero-terminal">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">python3 classic/quine.py</span>
+        </div>
+        <pre class="terminal-body"><code id="typewriter"></code><span class="cursor">▊</span></pre>
+      </div>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#live">▶ 在线运行一个 Quine</a>
+        <a class="btn btn-ghost" href="https://github.com/bit-cook/Quine" target="_blank" rel="noopener">查看源码</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num" data-count="22">0</span><span class="stat-label">已验证 Quine</span></div>
+        <div class="stat"><span class="stat-num" data-count="7">0</span><span class="stat-label">编程语言</span></div>
+        <div class="stat"><span class="stat-num" data-count="8">0</span><span class="stat-label">变体类型</span></div>
+        <div class="stat"><span class="stat-num" data-count="1">0</span><span class="stat-label">条命令验证</span></div>
+      </div>
+    </section>
+
+    <!-- WHAT -->
+    <section id="what" class="section">
+      <h2 class="section-title"><span class="hash">#</span> 什么是 Quine</h2>
+      <div class="two-col">
+        <div>
+          <p>一个 Quine 通常由两部分组成：</p>
+          <ul class="bullets">
+            <li><strong>代码部分 (Code)</strong> — 程序的逻辑指令。</li>
+            <li><strong>数据部分 (Data)</strong> — 代码部分的文本表示（通常是字符串）。</li>
+          </ul>
+          <p>执行时，程序<strong>用数据部分重构代码部分，再原样输出数据部分本身</strong>，于是得到与自身逐字节相同的输出。</p>
+          <div class="formula">
+            <code>程序 = 数据 + 使用数据输出「数据 + 使用数据输出」</code>
+          </div>
+          <p class="muted">注意：读取自身源文件（如 <code>cat "$0"</code>）<em>不算</em> Quine。真正的 Quine 不借助任何外部输入。</p>
+        </div>
+        <div class="code-card">
+          <div class="code-card-head"><span>classic/quine.py</span><button class="copy" data-copy="s='s=%r;print(s%%s)';print(s%s)">复制</button></div>
+          <pre><code class="lang-python">s='s=%r;print(s%%s)';print(s%s)</code></pre>
+          <div class="code-note">运行它，输出与源码<strong>完全相同</strong>。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE -->
+    <section id="live" class="section">
+      <h2 class="section-title"><span class="hash">#</span> 在线体验</h2>
+      <p class="section-lead">下面的 JavaScript Quine <strong>真的在你的浏览器里运行</strong>。点击运行，它的输出会与上方源码逐字节一致。</p>
+      <div class="live-wrap">
+        <div class="code-card">
+          <div class="code-card-head"><span>live · JavaScript Quine</span></div>
+          <pre><code class="lang-javascript" id="js-source">var s = "var s = @;\nconsole.log(s.replace('@',JSON.stringify(s)))";
+console.log(s.replace('@',JSON.stringify(s)))</code></pre>
+        </div>
+        <div class="live-panel">
+          <button class="btn btn-primary" id="run-js">▶ 运行 Quine</button>
+          <div class="live-output-head">输出</div>
+          <pre class="live-output" id="js-output">// 点击“运行”查看输出…</pre>
+          <div class="live-verdict" id="js-verdict"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="section">
+      <h2 class="section-title"><span class="hash">#</span> 变体图鉴</h2>
+      <p class="section-lead">从 29 字符极简版到多语言衔尾蛇链——每一种都经过 <code>tools/validate_all.py</code> 严格验证。</p>
+
+      <div class="filters" id="filters">
+        <button class="filter active" data-filter="all">全部</button>
+        <button class="filter" data-filter="classic">经典</button>
+        <button class="filter" data-filter="variant">变体</button>
+        <button class="filter" data-filter="ouroboros">衔尾蛇</button>
+        <button class="filter" data-filter="art">艺术</button>
+        <button class="filter" data-filter="esoteric">异种</button>
+      </div>
+
+      <div class="grid" id="gallery-grid"></div>
+    </section>
+
+    <!-- THEORY -->
+    <section id="theory" class="section">
+      <h2 class="section-title"><span class="hash">#</span> 背后的理论</h2>
+      <div class="two-col">
+        <div>
+          <h3>克莱尼递归定理</h3>
+          <p>Quine 的存在并非巧合，而是 <strong>Kleene 递归定理</strong>（不动点定理）的直接推论：在任何图灵完备的语言中，都存在一个程序能输出自身的源代码。</p>
+          <h3>对角线论证</h3>
+          <p>其证明思想源自康托尔/哥德尔的对角线法：构造一个“作用于自身描述”的程序，让它输出“被自身描述所指向的那个程序”。</p>
+          <h3>自指悖论</h3>
+          <p>Quine 与哲学上的自指（如说谎者悖论）同源，故名取自逻辑学家 <em>Willard Van Orman Quine</em>。</p>
+        </div>
+        <div class="code-card">
+          <div class="code-card-head"><span>泛型构造（不动点）</span></div>
+          <pre><code class="lang-text">设 template 是含占位符的程序模板，
+则 quine = template % repr(template)
+
+运行 quine：
+  template 用 repr(template) 填回自身，
+  输出恰好等于 template % repr(template)
+  —— 即 quine 本身。</code></pre>
+          <div class="code-note">这正是 <code>s='s=%r;print(s%%s)';print(s%s)</code> 的工作原理。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VERIFY -->
+    <section id="verify" class="section">
+      <h2 class="section-title"><span class="hash">#</span> 一键验证</h2>
+      <p class="section-lead">克隆仓库后，一条命令即可类型感知地验证所有 Quine（自复制 / 2-循环 / 衔尾蛇链 / 跨语言 / Brainfuck / 生成器）。</p>
+      <div class="code-card wide">
+        <div class="code-card-head"><span>terminal</span><button class="copy" data-copy="git clone https://github.com/bit-cook/Quine.git && cd Quine
+python3 tools/validate_all.py -v">复制</button></div>
+        <pre><code class="lang-bash">git clone https://github.com/bit-cook/Quine.git
+cd Quine
+python3 tools/validate_all.py -v</code></pre>
+      </div>
+      <div class="verify-badges">
+        <span class="vbadge ok">✓ Python (classic / variants / artistic)</span>
+        <span class="vbadge ok">✓ C · Go · Java · Rust · JavaScript · Shell</span>
+        <span class="vbadge ok">✓ Brainfuck</span>
+        <span class="vbadge ok">✓ 自包含 Ouroboros 链</span>
+        <span class="vbadge ok">✓ 生成器 / 元生成器</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-quote">
+        <p>"Yields falsehood when preceded by its quotation" yields falsehood when preceded by its quotation.</p>
+        <p class="muted">—— Quine's Paradox（奎因悖论），这句话本身也是一个 Quine。</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/bit-cook/Quine" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/bit-cook/Quine/blob/main/README.md" target="_blank" rel="noopener">README</a>
+        <a href="https://github.com/bit-cook/Quine/blob/main/CHALLENGES.md" target="_blank" rel="noopener">挑战</a>
+        <a href="https://en.wikipedia.org/wiki/Quine_(computing)" target="_blank" rel="noopener">Wikipedia</a>
+      </div>
+      <div class="footer-meta">MIT License · Built with ∀ by <a href="https://github.com/bit-cook" target="_blank" rel="noopener">BitCook</a></div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

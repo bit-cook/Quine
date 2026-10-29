@@ -1,11 +1,12 @@
 #!/bin/bash
-# Shell Quine
+# Shell Quine - classic self-reproducing program.
+# Verify: bash quine.sh | diff - quine.sh
 
-# 方法1: 使用 $0 读取自身
-# cat "$0"
+s='#!/bin/bash
+# Shell Quine - classic self-reproducing program.
+# Verify: bash quine.sh | diff - quine.sh
 
-# 方法2: 真正的 Quine (不读取文件)
-s='s=%s%s%s;printf "$s" "\'" "$s" "\'"
-printf "$s" "'" "$s" "'"
-
-# 验证: bash quine.sh | diff - quine.sh
+s=\47%s\47
+printf "$s" "$s"
+'
+printf "$s" "$s"

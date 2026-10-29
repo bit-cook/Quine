@@ -1,21 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-ASCII 艺术 Quine
-
-源代码是一个 ASCII 艺术图案，输出也是相同的图案。
-"""
-
-# 图案定义
-art = '''#!/usr/bin/env python3
-"""
-%s
-"""
-
-# 图案定义
-art = %r
-
-print(art %% (art.split(chr(10))[2], art))
-'''
-
-print(art % (art.split('\n')[2], art))
+# ASCII-art Quine - run with --art to show the banner.
+import sys
+_s = '#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n# ASCII-art Quine - run with --art to show the banner.\nimport sys\n_s = %r\n_p = %r\nif "--art" in sys.argv:\n    exec(_p)\nelse:\n    print(_s %% (_s, _p))'
+_p = 'BANNER = r"""\n +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n |Q|U|I|N|E| |S|E|L|F|-|R|E|P|L|I|C|A|T|I|O|N|\n +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n      .--.     .--.     .--.     .--.\n     |    |   |    |   |    |   |    |\n      \'--\'     \'--\'     \'--\'     \'--\'\n   A program that prints its own source code.\n"""\nprint(BANNER)\nprint("Run without --art to watch this file reproduce itself exactly.")\n'
+if "--art" in sys.argv:
+    exec(_p)
+else:
+    print(_s % (_s, _p))

@@ -1,0 +1,26 @@
+# Pre-commit hooks for the Quine project.
+# Install:  pip install pre-commit && pre-commit install
+# Run once: pre-commit run --all-files
+#
+# NOTE: The Quine source files are intentionally NOT auto-formatted, because
+# reformatting would break their byte-exact self-reproduction. The hooks below
+# only touch regular tooling code and docs.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '^(classic/|artistic/|variants/|esoteric/quine\.|python2/|generators/meta_quine)'
+      - id: end-of-file-fixer
+        exclude: '^(classic/|artistic/|variants/|esoteric/quine\.|python2/|generators/meta_quine)'
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        files: '^(tools/|tests/)'
+        args: ["--line-length=100"]

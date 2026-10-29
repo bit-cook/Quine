@@ -5,6 +5,7 @@ Quine 测试工具函数
 """
 
 import subprocess
+import sys
 import tempfile
 import os
 from typing import Tuple, Optional
@@ -12,22 +13,26 @@ from typing import Tuple, Optional
 
 class QuineValidator:
     """Quine 验证器"""
-    
+
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
-    
+
     def log(self, message: str):
         """打印日志"""
         if self.verbose:
             print(f"[QuineValidator] {message}")
-    
+
+    def _python_cmd(self):
+        """Return the interpreter to use for running Python quines."""
+        return [sys.executable]
+
     def validate_python_quine(self, filepath: str) -> Tuple[bool, str]:
         """
         验证 Python Quine
-        
+
         Args:
             filepath: Quine 文件路径
-            
+
         Returns:
             (是否通过, 详细信息)
         """
@@ -35,13 +40,13 @@ class QuineValidator:
             # 读取原始文件
             with open(filepath, 'r', encoding='utf-8') as f:
                 original = f.read()
-            
+
             self.log(f"读取文件: {filepath}")
             self.log(f"原始代码长度: {len(original)} 字符")
-            
+
             # 运行程序获取输出
             result = subprocess.run(
-                ['python', filepath],
+                self._python_cmd() + [filepath],
                 capture_output=True,
                 text=True,
                 timeout=10
@@ -147,7 +152,7 @@ def run_quine_test(filepath: str, language: str = 'python') -> bool:
     validator = QuineValidator(verbose=True)
     
     commands = {
-        'python': ['python', filepath],
+        'python': [sys.executable, filepath],
         'javascript': ['node', filepath],
         'c': [filepath.replace('.c', '')],
         'rust': [filepath.replace('.rs', '')],

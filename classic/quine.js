@@ -1,8 +1,5 @@
-/**
- * JavaScript Quine - 经典实现
- * 
- * 验证方法:
- *     node quine.js | diff - quine.js
+/*
+ * JavaScript Quine - classic self-reproducing program.
+ * Verify: node quine.js | diff - quine.js
  */
-
-(function $(){console.log('(' + $ + ')()')})()
+(function q(){console.log('/*'+String.fromCharCode(10)+' * JavaScript Quine - classic self-reproducing program.'+String.fromCharCode(10)+' * Verify: node quine.js | diff - quine.js'+String.fromCharCode(10)+' */'+String.fromCharCode(10)+'('+q+')()')})()

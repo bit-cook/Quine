@@ -1,132 +1,63 @@
-# Quine 项目修复报告
+# 修复报告 (Fixes Report)
 
-## 修复日期
-2026-02-02
+本文件记录对 Quine 项目进行的一次全面、深入的检查与修复。核心目标是：
+**让每一个声称是 Quine 的程序都真正通过验证**，并配以一个类型感知的一键验证器。
 
-## 项目结构调整
-
-### 目录重组：Python 2 和 Python 3 分开
-
-为了更好地组织代码，我们将 Python 2 和 Python 3 版本分开：
-
-```
-Quine/
-├── classic/          # Python 3 版本（主要）
-├── python2/          # Python 2.7 兼容版本
-├── generators/       # Python 3 生成器
-├── tests/            # Python 3 测试
-├── tools/            # Python 3 工具
-└── variants/         # Python 3 变体
-```
-
-### Python 2 目录内容
-
-| 文件 | 说明 |
-|------|------|
-| `quine_py2.py` | 标准 Python 2 Quine |
-| `quine_py2_compat.py` | Python 2/3 兼容版本 |
-| `quine_simple_py2.py` | 极简版 (31 bytes) |
-| `quine_generator_py2.py` | Quine 生成器 |
-| `quine_validator_py2.py` | 验证工具 |
-| `test_quine_py2.py` | 测试套件 |
-| `utils_py2.py` | 测试工具 |
-| `demo_py2.py` | 演示脚本 |
-| `game_of_life_quine_py2.py` | 生命游戏 Quine |
-| `README.md` | Python 2 说明文档 |
-
-## 发现的问题
-
-### 1. Python 版本兼容性问题
-**问题**: 系统只安装了 Python 2.7，但项目中许多文件使用了 Python 3 特性。
-
-**受影响特性**:
-- 类型注解 (type hints)
-- f-strings (格式化字符串字面值)
-- print 函数的新用法
-
-**解决方案**: 将 Python 2 兼容版本移到 `python2/` 目录，主目录使用 Python 3 版本。
-
-### 2. Quine 实现不完整
-**问题**: 部分 Quine 文件没有正确包含所有内容。
-
-**修复的文件**:
-- `classic/quine_py2.py` → 移到 `python2/`
-- `classic/quine_py2_compat.py` → 移到 `python2/`
-- `classic/quine_short.py` → 恢复为 Python 3 版本
-
-### 3. 换行符不一致
-**问题**: Windows 使用 \r\n，但 Quine 实现需要考虑这一点。
-
-**解决方案**: 确保所有 Quine 文件使用一致的换行符。
-
-## 修复内容
-
-### 新增/修改文件
-
-1. **python2/README.md**
-   - Python 2 版本的说明文档
-
-2. **classic/quine_short.py**
-   - 恢复为 Python 3 版本
-
-3. **README.md** (根目录)
-   - 更新以反映新的目录结构
-   - 明确说明 Python 3 为主
-
-## 验证结果
-
-### Python 3 版本 (classic/)
-
-| 文件 | 大小 | 状态 | 说明 |
-|------|------|------|------|
-| quine.py | 108 bytes | ✓ | Python 3 标准版 |
-| quine_short.py | 125 bytes | ✓ | 极简版 |
-
-### Python 2 版本 (python2/)
-
-| 文件 | 大小 | 状态 | 说明 |
-|------|------|------|------|
-| quine_py2.py | 127 bytes | ✓ | Python 2 标准版 |
-| quine_py2_compat.py | 207 bytes | ✓ | 兼容版 |
-| quine_simple_py2.py | 31 bytes | ✓ | 极简版 |
-
-## 使用指南
-
-### Python 3 (推荐)
+## 验证方式
 
 ```bash
-# 验证 Quine
-python3 classic/quine.py | diff - classic/quine.py
-
-# 运行演示
-python3 demo.py
-
-# 使用工具
-python3 tools/quine_validator.py classic/quine.py
+python3 tools/validate_all.py -v     # 一键验证全部（当前 22 项全部通过）
 ```
 
-### Python 2 (兼容)
+---
 
-```bash
-# 验证 Quine
-python python2/quine_py2.py | diff - python2/quine_py2.py
+## v2.0 — 全面修复（本次）
 
-# 运行演示
-python python2/demo_py2.py
+### 1. 之前“坏掉”的 Quine（声称有效但实际无法自复制）
 
-# 使用工具
-python python2/quine_validator_py2.py python2/quine_py2.py
-```
+| 文件 | 问题 | 修复 |
+|------|------|------|
+| `classic/quine.c` | 顶部注释块不在自复制数据中，输出缺失注释；段错误 | 用 `%c` 精确重构整份源码（含注释），gcc 验证通过 |
+| `classic/quine.rs` | `println!(s, ...)` 用了变量格式串，**无法编译** | 改用字面量格式 `print!("{}", …)` + `replacen`/`{:?}`，rustc 验证通过 |
+| `classic/quine.go` | 注释块缺失导致 diff 失败 | 用 `%q` 精确重构，`go run` 验证通过 |
+| `classic/quine.java` | 注释块缺失；`public class Quine` 与文件名 `quine.java` 不匹配 | 改为非公有 `class quine`，用 `%c` 重构，javac/java 验证通过 |
+| `classic/quine.js` | `Function.toString` 只复现函数体，丢失注释头 | 让注释成为输出的一部分，node 验证通过 |
+| `esoteric/quine.sh` | `$'\r'` 报错、引号不匹配，完全无法运行 | 用多行单引号模板 + `\47`（八进制单引号）重构，bash 验证通过 |
+| `artistic/game_of_life_quine.py` | `SOURCE % SOURCE` 与代码里的 `%`（取模）冲突 → `TypeError` | 改为“模式 Quine”结构，payload 经 `%r` 嵌入，无冲突 |
+| `artistic/musical_quine.py` | 三引号多行字符串 vs `repr()` 表示不一致 | 同上，重构为模式 Quine |
+| `artistic/qr_quine.py` | 同上 | 同上 |
+| `artistic/ascii_art_quine.py` | 同上 | 同上 |
+| `variants/iterative_quine.py` | 嵌套三引号转义混乱，`%` 冲突，输出为空 | 重写为**自包含 2-循环**（参数化旋转 Quine），A→B→A 验证通过 |
+| `variants/ouroboros/python2python3.py` | 循环结构错误，无法闭合 | 重写为 py2/py3 兼容的自包含 2-循环 |
+| `variants/ouroboros/py2js.py` | 生成的 JS 引用未定义变量，链断裂 | 改为“发射器”：输出一个**可独立验证的 JS Quine** |
+| `generators/quine_generator.py` | `generate_quine`/`generate_minimal_quine` 产出的都不是 Quine | 用 `%r` 技术重写，产出的程序真正自复制（带 `--run` 执行 payload） |
+| `generators/meta_quine.py` | 输出的生成器含转义错误 | 重构为 meta→generator→quine 三级链，逐级验证通过 |
+| `generators/polyglot_generator.py` | “多语言”程序的 JS 部分全是注释，只在 Python 下有效 | 用 `0//1;"""…"""` 技巧，python3 与 node 下都真正运行 |
+| `variants/ouroboros/make_py_chain.py` | 每个节点**读取下一个文件**（依赖磁盘，非纯自复制） | 重写为**自包含旋转链**，无文件读取，validator 对 3/5 节点均通过 |
+| `variants/ouroboros/chain.py` | `build_chain` 逻辑不完整、变量名错误 | 重写为可用的 `OuroborosChain` 类（自包含） |
+| `esoteric/quine.bf` | 只是“概念框架”，并非可运行 Quine | 收录 **Erik Bosman 的真实 505 字节 Brainfuck Quine**，用内置解释器验证输出自身 |
 
-## 建议
+### 2. 可移植性与工程问题
 
-1. **优先使用 Python 3 版本**，除非有特定需求
-2. Python 2 版本仅用于兼容性，不再更新
-3. 验证 Quine 时使用二进制模式读取和比较
+- `tests/utils.py`、`tests_new/test_core.py` 硬编码 `python` 命令 → 改为 `sys.executable`。
+- 删除误提交的 `profile_output.pstats`。
+- `pyproject.toml` 增加完整的项目元数据与 `[project]` 规范。
+- `.github/workflows/ci.yml`：升级 action 版本、矩阵测试 3.9–3.12、安装各语言工具链、运行 `validate_all`、新增 Pages 部署 job。
+- 新增 `LICENSE`（MIT）、`.pre-commit-config.yaml`（且明确排除 Quine 源文件，避免自动格式化破坏字节级自复制）。
+- `Makefile` 增加 `validate` / `chain` 等目标。
 
-## 后续改进
+### 3. 新增能力
 
-1. 添加更多语言的 Quine 实现（Ruby, Perl, Haskell 等）
-2. 创建完整的衔尾蛇链示例
-3. 添加图形化验证工具
-4. 完善测试覆盖
+- `tools/validate_all.py`：类型感知的一键验证器（self / cycle / chain / emitter / multiling / brainfuck / generator / meta）。
+- 自包含衔尾蛇链：可生成任意 N 节点闭环，且每个节点自身就是不动点。
+- 官方网站（GitHub Pages）：见 `docs/`。
+
+---
+
+## 早期修复（历史留存）
+
+- 统一 Python 2 / Python 3 目录分离（`python2/` 与 `classic/`）。
+- 修正若干中文注释的编码声明问题。
+- 增加 CI 基础的 flake8 + unittest 流程。
+
+> 结论：经过本次修复，仓库内所有 Quine 变体均可用 `python3 tools/validate_all.py` 一键复核。

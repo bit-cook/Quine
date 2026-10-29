@@ -1,6 +1,13 @@
 # Quine - 自复制程序的艺术
 
-[English Documentation](README_EN.md)
+[English Documentation](README_EN.md) · [官方网站 / Website](https://bit-cook.github.io/Quine/)
+
+<p align="left">
+  <img alt="CI" src="https://github.com/bit-cook/Quine/actions/workflows/ci.yml/badge.svg">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+  <img alt="Python 3.7+" src="https://img.shields.io/badge/python-3.7%2B-blue.svg">
+  <img alt="Quines verified" src="https://img.shields.io/badge/Quines-verified-brightgreen.svg">
+</p>
 
 > **Quine** 是一种无需外部输入、在运行中完整重构自身源代码的自复制程序。它是计算理论中“不动点”的直观体现，展示了代码如何像生物一样自我繁衍。
 
@@ -59,9 +66,21 @@ print(s%s)
 
 ## 🚀 快速开始
 
-### 1. 验证 Quine
+### 0. 一键验证所有 Quine（推荐）
 
-最直接验证 Quine 的方法是将输出重定向并与源文件比对。
+本项目内置一个**类型感知的主验证器**，能针对每种 Quine 采用正确判据（自复制 / 2-循环 / 衔尾蛇链 / 跨语言发射器 / 多语言 / Brainfuck / 生成器），一条命令全部验证：
+
+```bash
+python3 tools/validate_all.py          # 验证全部
+python3 tools/validate_all.py -v       # 显示每个的详细判据
+python3 tools/validate_all.py classic  # 只验证某目录/文件
+```
+
+当前状态：**所有收录的 Quine 均已通过验证**（含 C / Go / Java / Rust / JavaScript / Shell / Brainfuck 与全部 Python 变体）。
+
+### 1. 验证单个 Quine
+
+最直接的方法是将输出重定向并与源文件比对：
 
 ```bash
 # 标准 Python 3 实现
@@ -126,17 +145,22 @@ python3 enhanced_quine.py
 Quine/
 ├── README.md               # 中文主文档
 ├── README_EN.md            # English Documentation
+├── LICENSE                 # MIT 许可证
 ├── demo.py                 # 综合演示脚本
-├── enhanced_quine.py       # 增强版特性演示
 ├── config.json             # 配置文件
-├── classic/                # 经典实现 (Python, C, etc.)
-├── variants/               # 变体形式 (迭代、衔尾蛇等)
+├── classic/                # 经典实现 (Python, C, Go, Java, Rust, JS)
+├── variants/               # 变体形式 (迭代、自包含链、多语言等)
+│   └── ouroboros/          # 衔尾蛇链 (自包含，无文件读取)
 ├── generators/             # Quine 生成器
-├── artistic/               # 艺术性 Quine (ASCII, 二维码等)
-├── esoteric/               # 难解语言 Quine (Brainfuck 等)
+├── artistic/               # 艺术性 Quine (生命游戏、音乐、二维码等)
+├── esoteric/               # 异种语言 (Brainfuck 真实 Quine, Shell, SQL, Whitespace)
 ├── plugins/                # 插件系统实验
-├── tests_new/              # 自动化测试套件
-└── tools/                  # 辅助工具 (验证器、优化器)
+├── tests/  tests_new/      # 自动化测试套件
+└── tools/                  # 辅助工具
+    ├── validate_all.py     # ★ 类型感知的一键验证器
+    ├── quine_validator.py  # 单文件验证器
+    ├── size_optimizer.py   # 大小优化器
+    └── visualizer.py       # 可视化工具
 ```
 
 ## 🐍 Python 版本说明
