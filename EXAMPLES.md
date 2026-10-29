@@ -71,22 +71,13 @@ s='#!/usr/bin/env python3\n# 这是一个 Quine\ns=%r;print(s%%s)';print(s%s)
 ### 多行 Quine
 ```python
 #!/usr/bin/env python3
-"""
-多行 Quine 示例
-可以包含任意文档字符串
-"""
-
-s = '''#!/usr/bin/env python3
-"""
-多行 Quine 示例
-可以包含任意文档字符串
-"""
-
-s = %r
-print(s %% s)'''
-
+"""多行 Quine（带文档字符串的正确版）"""
+s = '#!/usr/bin/env python3\n"""多行 Quine（带文档字符串的正确版）"""\ns = %r\nprint(s %% s)'
 print(s % s)
 ```
+
+> 关键点：文件里的字符串赋值必须写成 **`repr()` 能原样还原** 的形式（单引号 + `\n` 转义）。
+> 若改用三引号多行字面量，`repr()` 会把它压成带 `\n` 的单行，导致输出与源文件不一致——这是最常见的“坏 Quine”陷阱。
 
 ## 验证方法
 
@@ -105,11 +96,12 @@ python quine.py | Out-File temp.txt; Compare-Object (Get-Content quine.py) (Get-
 ### Python 验证脚本
 ```python
 import subprocess
+import sys
 
 with open('quine.py', 'r') as f:
     original = f.read()
 
-result = subprocess.run(['python', 'quine.py'], 
+result = subprocess.run([sys.executable, 'quine.py'], 
                        capture_output=True, text=True)
 
 if original == result.stdout:
