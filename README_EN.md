@@ -1,8 +1,26 @@
 # Quine - The Art of Self-Replication
 
-[中文文档 (Chinese README)](README.md)
+[中文文档 (Chinese README)](README.md) · [Website](https://bit-cook.github.io/Quine/)
+
+<p align="left">
+  <img alt="CI" src="https://github.com/bit-cook/Quine/actions/workflows/ci.yml/badge.svg">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+  <img alt="Quines verified" src="https://img.shields.io/badge/Quines-verified-brightgreen.svg">
+</p>
 
 > **Quine** is a self-replicating program that reconstructs its own source code during execution without any external input. It is a direct manifestation of "fixed points" in computability theory, demonstrating how code can reproduce itself like a living organism.
+
+## ⚡ One-command verification
+
+Every Quine in this repo is verified by a type-aware validator:
+
+```bash
+python3 tools/validate_all.py          # verify all
+python3 tools/validate_all.py -v       # show per-file verdicts
+python3 tools/validate_all.py classic  # verify one path
+```
+
+It understands each Quine's kind — self-reproducing, 2-cycle, Ouroboros chain, cross-language emitter, multi-language, Brainfuck, and generators — and applies the correct criterion to each. **All included Quines currently pass.**
 
 ## 📚 Overview
 
