@@ -87,28 +87,28 @@ Quine/
 - ✅ 多语言版本 (JS, C, Rust, Go, Java)
 
 ### 2. 变体实现
-- ✅ 迭代 Quine (2-循环)
-- ✅ 多语言 Quine (Python 2/3 兼容)
-- ✅ 衔尾蛇链框架
-- ⚠️ 抗辐射 Quine (框架版)
-- ⚠️ ZIP Quine (简化版)
+- ✅ 迭代 Quine（自包含 2-循环 A→B→A）
+- ✅ 多语言 Quine（Python 2/3 兼容，两种解释器均输出自身）
+- ✅ 自包含衔尾蛇链（N 节点闭环，无文件读取）
+- ⚠️ 抗辐射 Quine（框架版）
+- ⚠️ ZIP Quine（概念/教学版，说明 DEFLATE 不动点难点）
 
 ### 3. 生成器
-- ✅ 通用 Quine 生成器
-- ✅ 元 Quine 生成器
-- ✅ 多语言程序生成器框架
+- ✅ 通用 Quine 生成器（产出真正的自复制程序）
+- ✅ 元 Quine 生成器（meta → generator → quine 三级链）
+- ✅ 多语言程序生成器（Python/JavaScript 双语言可运行）
 
 ### 4. 艺术 Quine
 - ✅ ASCII 艺术 Quine
-- ✅ 生命游戏 Quine (可运行游戏)
-- ✅ 音乐 Quine (可播放旋律)
-- ✅ 二维码 Quine (生成二维码)
+- ✅ 生命游戏 Quine（默认自复制，`--play` 运行游戏）
+- ✅ 音乐 Quine（`--play` 播放旋律）
+- ✅ 二维码 Quine（`--generate` 生成自身源码的二维码）
 
 ### 5. 异种语言
-- ⚠️ Brainfuck (概念版)
+- ✅ Brainfuck（Erik Bosman 真实 505 字节 Quine，仓库内置解释器可验证）
 - ✅ Shell 脚本
-- ⚠️ SQL (概念版)
-- ⚠️ Whitespace (概念版)
+- ⚠️ SQL（概念版：纯 SQL 无法 eval，严格 Quine 不可行）
+- ⚠️ Whitespace（概念版：源码为纯空白字符，附构造思路）
 
 ### 6. 测试与工具
 - ✅ Quine 验证器
@@ -158,16 +158,22 @@ cat FAQ.md
 
 ## 验证状态
 
-在 Python 2.7 环境下测试：
+一条命令即可类型感知地验证全部 Quine：
 
-| 文件 | 状态 | 说明 |
-|------|------|------|
-| `classic/quine_py2_compat.py` | ✅ 通过 | 基础 Quine |
-| `classic/quine_short.py` | ✅ 通过 | 极简版本 |
-| `classic/quine.py` | ⚠️ 需 Python 3 | 含中文注释 |
-| `variants/iterative_quine.py` | ⚠️ 需 Python 3 | 含中文注释 |
-| `generators/*.py` | ⚠️ 需 Python 3 | 含类型注解 |
-| `artistic/*.py` | ⚠️ 需 Python 3 | 含类型注解 |
+```bash
+python3 tools/validate_all.py -v
+```
+
+当前结果：**22 项全部通过**（self / cycle / chain / emitter / multiling / brainfuck / generator / meta）。CI 在 Python 3.10–3.13 矩阵及各语言工具链下同样全部通过。
+
+| 类别 | 验证方式 |
+|------|----------|
+| Python 自复制（classic / variants / artistic） | 运行后输出 == 源文件 |
+| 迭代 Quine、Python2↔3 | A→B→A 闭环 |
+| 自包含衔尾蛇链 | 节点 i 输出节点 i+1，闭环 |
+| C / Go / Java / Rust / JS / Shell | 编译/运行后输出 == 源文件 |
+| Brainfuck | 内置解释器运行后输出 == 源文件 |
+| 生成器 / 元生成器 | 其产出物本身是有效 Quine |
 
 ## 学习路径
 
